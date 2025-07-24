@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report User</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+.report-card {
+    background: rgba(30,34,40,0.85);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px 0 rgba(31,38,135,0.27);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    padding: 2.5rem 2rem 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+}
+.report-card h2 {
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #fff;
+}
+.form-floating > .form-control, .form-floating > .form-select {
+    background: rgba(36,37,38,0.85) !important;
+    color: #fff !important;
+    border: 1.5px solid #4f8cff !important;
+    border-radius: 0.75rem;
+}
+.form-floating > label {
+    color: #bdbdbd !important;
+    font-weight: 500;
+    left: 0.75rem;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #4f8cff !important;
+    box-shadow: 0 0 0 0.2rem rgba(79,140,255,0.15);
+    background: rgba(36,37,38,0.95) !important;
+}
+.report-card .btn-primary {
+    background: linear-gradient(90deg,#4f8cff,#a6ffcb);
+    color: #18191a;
+    font-weight: 700;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1.15rem;
+    box-shadow: 0 2px 12px 0 rgba(79,140,255,0.15);
+    transition: background 0.2s, color 0.2s;
+}
+.report-card .btn-primary:hover {
+    background: linear-gradient(90deg,#a6ffcb,#4f8cff);
+    color: #18191a;
+}
+.report-card .btn-link {
+    color: #4f8cff !important;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    background: rgba(36,37,38,0.7);
+    padding: 0.5rem 1.2rem;
+    margin-top: 1.2rem;
+    transition: background 0.2s;
+}
+.report-card .btn-link:hover {
+    background: #4f8cff !important;
+    color: #fff !important;
+}
+</style>
+</head>
+<body class="bg-dark">
+    {% include 'navbar.html' %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="report-card">
+                    <h2 class="text-center mb-4">
+                        <i class="fa fa-flag text-danger me-2"></i>Report {{ reported }}
+                    </h2>
+                    <form method="POST">
+                        <div class="form-floating mb-4">
+                            <select class="form-select" id="reason" name="reason" required>
+                                <option value="" selected disabled>Select a reason</option>
+                                <option value="Spam">Spam</option>
+                                <option value="Harassment">Harassment</option>
+                                <option value="Inappropriate Content">Inappropriate Content</option>
+                                <option value="Fake Account">Fake Account</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <label for="reason"><i class="fa fa-exclamation-circle me-2"></i>Reason</label>
+                        </div>
+                        <div class="form-floating mb-4">
+                            <textarea class="form-control" placeholder="Details (optional)" id="details" name="details" style="height: 120px"></textarea>
+                            <label for="details"><i class="fa fa-info-circle me-2"></i>Details (optional)</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mb-2">
+                            <i class="fa fa-paper-plane me-2"></i>Submit Report
+                        </button>
+                    </form>
+                    <a href="{{ url_for('home') }}" class="btn btn-link w-100">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

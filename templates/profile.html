@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap">
+    <style>
+        body { background: #18191a !important; color: #e0e0e0 !important; font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif; }
+        .profile-header-pro {
+            background: rgba(30,34,40,0.92);
+            border-radius: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(31,38,135,0.27);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem 2rem 2rem 2rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+        }
+        .profile-pic-lg-pro {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #4f8cff;
+            box-shadow: 0 2px 16px #0008;
+            background: #23272b;
+        }
+        .profile-info-pro {
+            flex: 1;
+        }
+        .profile-username-pro {
+            font-size: 2.7rem;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.7rem;
+            text-shadow: 0 2px 8px #000a;
+        }
+        .profile-stats-pro {
+            display: flex;
+            gap: 2.5rem;
+            margin: 1.1rem 0 1.3rem 0;
+        }
+        .profile-stats-pro span {
+            font-size: 1.25rem;
+            color: #fff;
+            font-weight: 900;
+            text-shadow: 0 2px 12px #4f8cff55, 0 1px 0 #23272b;
+            letter-spacing: 0.01em;
+        }
+        .profile-stats-pro a {
+            color: #a6ffcb !important;
+            font-weight: 900;
+            text-shadow: 0 2px 12px #4f8cff55, 0 1px 0 #23272b;
+        }
+        .profile-bio-pro {
+            color: #a6ffcb;
+            font-size: 1.22rem;
+            margin-bottom: 1.1rem;
+            font-weight: 700;
+            text-shadow: 0 2px 12px #4f8cff55, 0 1px 0 #23272b;
+            letter-spacing: 0.01em;
+        }
+        .btn-ig-pro {
+            background: linear-gradient(90deg,#4f8cff,#003366);
+            color: #fff;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 7px 28px;
+            font-weight: 800;
+            margin-right: 10px;
+            font-size: 1.08rem;
+            box-shadow: 0 2px 8px #0004;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .btn-ig-pro:hover {
+            background: linear-gradient(90deg,#a6ffcb,#4f8cff);
+            color: #18191a;
+            box-shadow: 0 4px 16px #4f8cff44;
+        }
+        .post-grid-pro {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+        .post-grid-img-pro {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 1.2rem;
+            background: #23272b;
+            box-shadow: 0 2px 12px #0008;
+            transition: filter 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .post-grid-img-pro:hover {
+            filter: brightness(0.85);
+            box-shadow: 0 8px 32px #4f8cff33;
+        }
+        @media (max-width: 900px) {
+            .profile-header-pro { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+            .post-grid-pro { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .post-grid-pro { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="bg-dark">
+    {% include 'navbar.html' %}
+    <div class="container mt-5">
+        <div class="profile-header-pro">
+            <img src="{{ url_for('static', filename='profile_pics/' ~ (user.profile_pic if user.profile_pic else 'default_avatar.png')) }}" class="profile-pic-lg-pro">
+            <div class="profile-info-pro">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="profile-username-pro">{{ user.username }}</span>
+                    {% if session['username'] == user.username %}
+                        <a href="{{ url_for('edit_profile') }}" class="btn btn-ig-pro ms-3">Edit Profile</a>
+                        <a href="{{ url_for('logout') }}" class="btn btn-ig-pro ms-2">Logout</a>
+                    {% else %}
+                        <form method="post" action="{{ url_for('follow_user' if not is_following else 'unfollow_user', username=user.username) }}" class="d-inline">
+                            <button type="submit" class="btn btn-ig-pro ms-3">{{ 'Follow' if not is_following else 'Unfollow' }}</button>
+                        </form>
+                    {% endif %}
+                </div>
+                <div class="profile-stats-pro">
+                    <span><b>{{ posts|length }}</b> Posts</span>
+                    <span>
+                      <b><a href="#" data-bs-toggle="modal" data-bs-target="#followersModal">{{ followers|length }}</a></b> Followers
+                    </span>
+                    <span>
+                      <b><a href="#" data-bs-toggle="modal" data-bs-target="#followingModal">{{ following|length }}</a></b> Following
+                    </span>
+                </div>
+                <div class="profile-bio-pro">{{ user.bio }}</div>
+            </div>
+        </div>
+        <hr style="border-color:#222;">
+        <div class="post-grid-pro mt-4">
+            {% for post in posts %}
+                <a href="{{ url_for('post_view', post_id=post.post_id) }}">
+                    <img src="{{ url_for('static', filename='trip_posts/' ~ post.image) }}" class="post-grid-img-pro">
+                </a>
+            {% endfor %}
+        </div>
+        <!-- Followers Modal -->
+        <div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="followersModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+              <div class="modal-header">
+                <h5 class="modal-title" id="followersModalLabel">Followers</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <ul class="list-group list-group-flush">
+                  {% for follower in followers %}
+                  <li class="list-group-item bg-dark text-light"><a href="{{ url_for('view_profile', username=follower) }}" class="text-info">{{ follower }}</a></li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Following Modal -->
+        <div class="modal fade" id="followingModal" tabindex="-1" aria-labelledby="followingModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+              <div class="modal-header">
+                <h5 class="modal-title" id="followingModalLabel">Following</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <ul class="list-group list-group-flush">
+                  {% for followee in following %}
+                  <li class="list-group-item bg-dark text-light"><a href="{{ url_for('view_profile', username=followee) }}" class="text-info">{{ followee }}</a></li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</body>
+</html>

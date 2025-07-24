@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Users</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+body.bg-dark {
+    background: linear-gradient(135deg, #18191a 0%, #232526 100%) !important;
+    color: #fff !important;
+}
+.user-card-modern {
+    background: rgba(24,25,26,0.92);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px 0 rgba(31,38,135,0.27);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(60,60,60,0.28);
+    transition: box-shadow 0.2s, transform 0.2s;
+    color: #fff !important;
+}
+.user-card-modern:hover {
+    box-shadow: 0 16px 48px 0 rgba(31,38,135,0.47);
+    transform: translateY(-4px) scale(1.02);
+}
+.user-avatar-modern {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #4f8cff;
+    box-shadow: 0 2px 8px #0006;
+}
+.card, .user-card-modern, .bg-dark {
+    background: rgba(24,25,26,0.92) !important;
+    color: #fff !important;
+}
+.btn-outline-primary, .btn-outline-info, .btn-outline-danger {
+    background: rgba(36,37,38,0.7) !important;
+    color: #fff !important;
+    border: 1px solid #4f8cff !important;
+    font-weight: 600;
+}
+.btn-outline-primary:hover, .btn-outline-info:hover, .btn-outline-danger:hover {
+    background: #4f8cff !important;
+    color: #fff !important;
+}
+.user-card-modern .fw-bold, .user-card-modern .fs-5, .user-card-modern .card-title {
+    color: #fff !important;
+    font-weight: 900;
+    text-shadow: 0 2px 8px #4f8cff, 0 1px 0 #000, 0 0 2px #fff;
+}
+.user-card-modern .text-muted, .user-card-modern .small {
+    color: #fff !important;
+    font-weight: 600;
+    text-shadow: 0 1px 2px #000a;
+}
+.user-card-modern .badge {
+    color: #222 !important;
+    background: linear-gradient(90deg,#4f8cff,#a6ffcb) !important;
+    font-weight: 800;
+    font-size: 1.08rem;
+    text-shadow: 0 1px 2px #fff8;
+}
+.user-card-modern .fa-heart {
+    color: #ff4f81 !important;
+}
+    </style>
+</head>
+<body class="bg-dark">
+    {% include 'navbar.html' %}
+    <div class="container-fluid min-vh-100 d-flex flex-column align-items-center justify-content-start p-0" style="background: linear-gradient(135deg, #18191a 0%, #232526 100%);">
+        <h2 class="mb-4 mt-5 text-center" style="font-size:2.2rem; font-weight:800; color:#3498ff; letter-spacing:1px;"><i class="fa fa-users me-2"></i>Search Users</h2>
+        <div class="glass-search-box mb-5 p-4 rounded-4 shadow-lg d-flex flex-column align-items-center" style="max-width:500px; width:100%; background:rgba(36,37,38,0.85); backdrop-filter: blur(12px); border:1.5px solid #4f8cff;">
+            <form method="GET" action="{{ url_for('list_users') }}" class="w-100 d-flex flex-row align-items-center justify-content-center gap-2">
+                <div class="search-bar-wrapper position-relative flex-grow-1 d-flex align-items-center" style="width:100%; max-width:100%; min-width:0;">
+                    <span class="search-icon position-absolute" style="left:14px; color:#bdbdbd; font-size:1.2rem;"><i class="fa fa-search"></i></span>
+                    <input type="text" name="username" class="form-control form-control-lg bg-transparent text-white border-0 shadow-none ps-5 pe-5" id="floatingUsername" placeholder="Username" value="{{ request.args.get('username', '') }}" style="background:rgba(24,25,26,0.7)!important; color:#fff!important; border-radius:2rem; border:1.5px solid #4f8cff; height:2.8rem; width:100%; max-width:100%; font-size:1.1rem; padding-left:2.2rem !important;">
+                    <button type="button" id="clearSearchBtn" style="display:none; position:absolute; right:14px; top:50%; transform:translateY(-50%); background:transparent; border:none; color:#bdbdbd; font-size:1.2rem; cursor:pointer; z-index:2;" tabindex="-1">&times;</button>
+                </div>
+                <button type="submit" class="btn btn-primary search-btn d-flex align-items-center justify-content-center" style="background:linear-gradient(90deg,#4f8cff,#a6ffcb); color:#222; font-weight:700; border:none; border-radius:2rem; min-width:80px; height:2.8rem; box-shadow:0 2px 8px #0003; font-size:1.1rem;">Search</button>
+            </form>
+        </div>
+        {% if users %}
+        <div class="row w-100 justify-content-center g-4 px-3 px-md-5">
+            {% for user in users %}
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex align-items-stretch">
+                <div class="user-card-modern shadow-lg p-4 rounded-4 bg-dark position-relative w-100 d-flex flex-column align-items-center glass-card" style="background:rgba(30,34,40,0.92); border:1.5px solid #4f8cff; box-shadow:0 8px 32px 0 rgba(31,38,135,0.27); transition:box-shadow 0.2s, transform 0.2s;">
+                    <img src="{{ url_for('static', filename='profile_pics/' ~ (user.profile_pic if user.profile_pic else 'default_avatar.png')) }}?v={{ profile_pic_version }}" alt="Avatar" class="user-avatar-modern mb-3" style="border:3px solid #4f8cff; box-shadow:0 2px 8px #0006;">
+                    <div class="fw-bold fs-5 text-white text-center mb-1">{{ user.username }}</div>
+                    <div class="text-muted small text-center mb-2">{{ user.bio }}</div>
+                    <span class="badge bg-gradient text-dark mb-3 px-3 py-2" style="background:linear-gradient(90deg,#4f8cff,#a6ffcb);color:#222;font-weight:600;font-size:1rem;"><i class="fa fa-heart text-danger me-1"></i> {{ user.interests }}</span>
+                    <div class="d-flex gap-2 mt-auto w-100">
+                        <a href="{{ url_for('chat', username=user.username) }}" class="btn btn-outline-primary btn-sm flex-fill" style="border-radius:0.75rem;"><i class="fa fa-envelope"></i> Message</a>
+                        <a href="{{ url_for('view_profile', username=user.username) }}" class="btn btn-outline-info btn-sm flex-fill" style="border-radius:0.75rem;"><i class="fa fa-user"></i> View Profile</a>
+                        <a href="{{ url_for('report_user', reported=user.username) }}" class="btn btn-outline-danger btn-sm flex-fill" style="border-radius:0.75rem;"><i class="fa fa-flag"></i> Report</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <div class="alert alert-info mt-5">No users found.</div>
+        {% endif %}
+        <a href="{{ url_for('home') }}" class="btn btn-link mt-5 mb-4" style="color:#4f8cff;font-weight:600;font-size:1.1rem;">&larr; Back to Home</a>
+    </div>
+    <style>
+        .glass-search-box {
+            max-width: 500px;
+            width: 100%;
+        }
+        .search-bar-wrapper {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            margin: 0 auto;
+        }
+        .search-bar-wrapper input[type="text"] {
+            width: 100%;
+            max-width: 100%;
+            padding-left: 2.2rem !important;
+            padding-right: 2.2rem !important;
+            font-size: 1.1rem;
+            height: 2.8rem;
+            border-radius: 2rem;
+            box-shadow: 0 2px 8px #0002;
+            color: #fff !important;
+            font-weight: 800;
+            text-shadow: 0 1px 2px #000a;
+        }
+        .search-bar-wrapper input[type="text"]::placeholder {
+            color: #fff !important;
+            opacity: 1;
+            font-weight: 700;
+            text-shadow: 0 1px 2px #000a;
+        }
+        .search-bar-wrapper .search-icon {
+            left: 14px;
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+        .search-bar-wrapper .search-btn {
+            font-size: 1.1rem;
+            border-radius: 2rem;
+            min-width: 80px;
+            height: 2.8rem;
+            font-weight: 700;
+            box-shadow: 0 2px 8px #0003;
+        }
+        @media (max-width: 600px) {
+            .glass-search-box { padding: 1.2rem 0.5rem; max-width: 100%; }
+            .search-bar-wrapper input[type="text"] { font-size: 1rem; height:2.2rem; border-radius:1.2rem; }
+            .search-bar-wrapper .search-btn { min-width: 60px; font-size: 0.95rem; height:2.2rem; border-radius:1.2rem; }
+            .user-avatar-modern { width: 56px; height: 56px; }
+            .search-bar-wrapper .search-icon { font-size: 1rem; left: 8px; }
+        }
+    </style>
+    <script>
+        const searchInput = document.getElementById('floatingUsername');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        function toggleClearBtn() {
+            clearBtn.style.display = searchInput.value ? '' : 'none';
+        }
+        searchInput.addEventListener('input', toggleClearBtn);
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            searchInput.focus();
+            toggleClearBtn();
+        });
+        window.addEventListener('DOMContentLoaded', toggleClearBtn);
+    </script>
+</body>
+</html>

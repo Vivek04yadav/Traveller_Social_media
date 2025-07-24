@@ -1,0 +1,44 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('home') }}">
+      <i class="fa fa-plane"></i> Travel Partner
+    </a>
+    <div>
+      {% if 'username' in session %}
+        <span class="navbar-text me-3">Hello, {{ session['username'] }}!</span>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto">Notification</strong>
+      <small>Now</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body" id="toastBody">
+      <!-- Message will appear here -->
+    </div>
+  </div>
+</div>
+
+<script>
+function showToast(message) {
+    document.getElementById('toastBody').textContent = message;
+    var toast = new bootstrap.Toast(document.getElementById('liveToast'));
+    toast.show();
+}
+
+// Example: Show a toast when the page loads if there's a flash message
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      showToast("{{ message }}");
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+</script>

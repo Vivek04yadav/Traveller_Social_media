@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home - Travel Partner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #18191a 0%, #232526 100%) !important;
+            color: #e0e0e0 !important;
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+        .hero-section {
+            position: relative;
+            min-height: 340px;
+            border-radius: 2rem;
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+            background: linear-gradient(120deg, #4f8cff 0%, #a6ffcb 100%);
+            display: flex;
+            align-items: center;
+        }
+        .hero-section .hero-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7) blur(2px);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: #fff;
+            padding: 2.5rem 2rem;
+        }
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 16px #0008;
+        }
+        .hero-lead {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        .hero-btn {
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 2rem;
+            padding: 0.75rem 2.2rem;
+            background: linear-gradient(90deg,#4f8cff,#a6ffcb);
+            color: #222;
+            border: none;
+            box-shadow: 0 2px 12px #0003;
+            transition: background 0.2s, color 0.2s;
+        }
+        .hero-btn:hover {
+            background: linear-gradient(90deg,#a6ffcb,#4f8cff);
+            color: #18191a;
+        }
+        .about-section-pro {
+            background: rgba(30,34,40,0.92);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 2.5rem 2rem 2rem 2rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+        }
+        .about-section-pro h3 {
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #4f8cff;
+        }
+        .about-section-pro ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .about-section-pro ul li {
+            margin-bottom: 0.7rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+        .about-section-pro ul li i {
+            color: #a6ffcb;
+            margin-right: 0.7rem;
+            font-size: 1.2rem;
+        }
+        .about-section-pro .btn {
+            background: linear-gradient(90deg,#4f8cff,#a6ffcb);
+            color: #222;
+            font-weight: 700;
+            border-radius: 2rem;
+            box-shadow: 0 2px 12px #0003;
+        }
+        .about-section-pro .btn:hover {
+            background: linear-gradient(90deg,#a6ffcb,#4f8cff);
+            color: #18191a;
+        }
+        .post-card {
+            margin-bottom: 2rem;
+            background: rgba(24,25,26,0.97) !important;
+            color: #fff;
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 24px 0 rgba(31,38,135,0.13);
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .post-card:hover {
+            box-shadow: 0 8px 32px 0 rgba(79,140,255,0.18), 0 2px 8px #0006;
+            transform: translateY(-4px) scale(1.02);
+        }
+        .post-img { width: 100%; max-height: 320px; object-fit: cover; border-radius: 1.2rem 1.2rem 0 0; }
+        .profile-pic {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 8px;
+        }
+        .card-title, .fw-bold {
+            font-weight: 700 !important;
+        }
+        .text-muted {
+            color: #bdbdbd !important;
+        }
+        .hero-title, .hero-lead {
+            color: #fff !important;
+            text-shadow: 0 6px 32px #000, 0 2px 0 #222 !important;
+            font-weight: 900 !important;
+        }
+        .about-section-pro, .about-section-pro p, .about-section-pro ul, .about-section-pro li {
+            color: #fff !important;
+            text-shadow: 0 2px 8px #000a;
+            font-weight: 700;
+        }
+        .about-section-pro h3 {
+            color: #4f8cff !important;
+            text-shadow: 0 2px 12px #000a;
+            font-weight: 900;
+        }
+        .about-section-pro ul li {
+            background: #18191a;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem 1.2rem;
+            color: #fff !important;
+            font-size: 1.15rem;
+            box-shadow: 0 2px 8px #0004;
+            font-weight: 800;
+        }
+        .about-section-pro ul li i {
+            color: #a6ffcb;
+            margin-right: 0.7rem;
+            font-size: 1.3rem;
+        }
+        @media (max-width: 900px) {
+            .hero-title { font-size: 2rem; }
+            .about-section-pro { padding: 1.5rem 0.7rem; }
+        }
+    </style>
+</head>
+<body class="bg-dark">
+    {% include 'navbar.html' %}
+    {% include 'sidebar.html' %}
+    <div style="margin-left:230px;">
+        <div class="container mt-4">
+            <!-- Hero Section -->
+            <div class="hero-section mb-5 row align-items-center g-0" style="min-height:380px; position:relative;">
+                <div style="position:absolute; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:1;"></div>
+                <div class="col-md-6 d-flex flex-column justify-content-center align-items-start p-5" style="z-index:2;">
+                    <div class="hero-title mb-2" style="color:#fff; text-shadow:0 6px 32px #000, 0 2px 0 #222; font-weight:900; font-size:3.2rem;">Welcome to Travel Partner</div>
+                    <div class="hero-lead mb-4" style="color:#fff; text-shadow:0 4px 16px #000, 0 1px 0 #222; font-weight:800; font-size:1.5rem;">Connect with fellow travelers, share your adventures, and discover new destinations.</div>
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('list_trips') }}" class="hero-btn d-flex align-items-center"><i class="bi bi-search me-2"></i>Find Trips</a>
+                        <a href="{{ url_for('create_trip') }}" class="hero-btn d-flex align-items-center" style="background:linear-gradient(90deg,#a6ffcb,#4f8cff); color:#18191a;"><i class="bi bi-plus-circle me-2"></i>Create Trip</a>
+                    </div>
+                </div>
+                <div class="col-md-6 position-relative h-100">
+                    <img src="{{ url_for('static', filename='images/travel_intro.jpg') }}" alt="Travel Intro" class="hero-bg w-100 h-100" style="object-fit:cover; min-height:340px; border-radius:0 2rem 2rem 0; filter:brightness(0.8) blur(0px);" onerror="this.style.display='none'">
+                </div>
+            </div>
+            <!-- About Section -->
+            <div class="row justify-content-center mb-5">
+                <div class="col-md-8">
+                    <div class="about-section-pro">
+                        <h3><i class="bi bi-info-circle-fill me-2"></i>About This Website</h3>
+                        <p>
+                            <b>Travel Partner</b> is your social network for travelers! Find your perfect travel buddy, create and join trips, share your travel stories and photos, chat with fellow explorers, and build your travel community. Whether you're planning your next adventure or looking to make new friends on the road, Travel Partner is here for you.
+                        </p>
+                        <ul>
+                            <li><i class="bi bi-geo-alt-fill"></i>Find and join trips</li>
+                            <li><i class="bi bi-image"></i>Share trip posts and photos</li>
+                            <li><i class="bi bi-chat-dots"></i>Message and connect with other users</li>
+                            <li><i class="bi bi-award"></i>Earn badges and achievements</li>
+                            <li><i class="bi bi-bell"></i>Get notifications and trip invites</li>
+                            <li><i class="bi bi-stars"></i>And much more!</li>
+                        </ul>
+                        <div class="mt-3">
+                            <button id="shareBtn" class="btn">Share This Website</button>
+                            <span id="shareMsg" class="ms-2 text-success" style="display:none;">Link copied!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+            document.getElementById('shareBtn').onclick = function() {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Travel Partner',
+                        text: 'Join me on Travel Partner!',
+                        url: window.location.origin
+                    });
+                } else {
+                    navigator.clipboard.writeText(window.location.origin);
+                    document.getElementById('shareMsg').style.display = 'inline';
+                    setTimeout(function() {
+                        document.getElementById('shareMsg').style.display = 'none';
+                    }, 2000);
+                }
+            };
+            </script>
+            <!-- Section 2: Your Posts (optional) -->
+            {% if your_posts and your_posts|length > 0 %}
+            <h3 class="mb-4 text-center"><i class="bi bi-person-badge me-2"></i>Your Trip Posts</h3>
+            <div class="row">
+                {% for post in your_posts %}
+                <div class="col-md-4">
+                    <div class="card post-card shadow-sm">
+                        <img src="{{ url_for('static', filename='trip_posts/' ~ post.image) }}" class="post-img card-img-top">
+                        <div class="card-body">
+                            <h6 class="card-title mb-1 d-flex align-items-center">
+                                <img src="{{ get_avatar_url(post.username) }}?v={{ profile_pic_version }}" class="profile-pic">
+                                <a href="{{ url_for('view_profile', username=post.username) }}"><b>{{ post.username }}</b></a>
+                            </h6>
+                            <p class="card-text">{{ post.caption | highlight_tags_and_mentions }}</p>
+                            <p class="text-muted small mb-0">{{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <!-- Section 3: Recent Trip Posts -->
+            <h3 class="mb-4 text-center"><i class="bi bi-images me-2"></i>Recent Trip Posts</h3>
+            <div class="row">
+                {% for post in posts_to_show %}
+                <div class="col-md-4">
+                    <div class="card post-card shadow-sm">
+                        <img src="{{ url_for('static', filename='trip_posts/' ~ post.image) }}" class="post-img card-img-top">
+                        <div class="card-body">
+                            <h6 class="card-title mb-1 d-flex align-items-center">
+                                <img src="{{ get_avatar_url(post.username) }}?v={{ profile_pic_version }}" class="profile-pic">
+                                <a href="{{ url_for('view_profile', username=post.username) }}"><b>{{ post.username }}</b></a>
+                            </h6>
+                            <p class="card-text">{{ post.caption | highlight_tags_and_mentions }}</p>
+                            <p class="text-muted small mb-0">{{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!-- ...scripts (like, comment JS)... -->
+</body>
+</html>

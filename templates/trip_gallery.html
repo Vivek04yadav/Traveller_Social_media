@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trip Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-dark">
+    {% include 'navbar.html' %}
+    <div class="container mt-5">
+        <h2>Trip Gallery</h2>
+        <form method="POST" enctype="multipart/form-data" class="mb-4">
+            <div class="input-group">
+                <input type="file" name="photo" class="form-control" accept="image/*" required>
+                <button type="submit" class="btn btn-primary">Upload Photo</button>
+            </div>
+        </form>
+        {% if photos %}
+            <div class="row">
+                {% for photo in photos %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img src="{{ url_for('static', filename='images/trip_gallery/' ~ photo.filename) }}" class="card-img-top" alt="Trip Photo">
+                            <div class="card-body">
+                                <p class="card-text"><strong>{{ photo.username }}</strong> <br><small>{{ photo.timestamp }}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">No photos yet.</div>
+        {% endif %}
+        <a href="{{ url_for('trip_details', trip_id=trip_id) }}" class="btn btn-link mt-3">Back to Trip</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invite Users to Trip</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-dark">
+    {% include 'navbar.html' %}
+    <div class="container mt-5">
+        <h2>Invite Users to {{ trip.destination }}</h2>
+        {% if current_user == trip.creator %}
+        <ul class="list-group">
+            {% for user in invite_candidates %}
+                <li class="list-group-item d-flex justify-content-between align-items-center bg-dark text-white">
+                    <span class="fw-semibold">{{ user.username }}</span>
+                    {% if user.invite_cooldown %}
+                        <span class="badge bg-secondary" data-seconds="{{ user.invite_cooldown }}" id="cooldown-{{ user.username }}">
+                            {{ (user.invite_cooldown // 3600)|int }}:{% if (user.invite_cooldown // 60) % 60 < 10 %}0{% endif %}{{ ((user.invite_cooldown // 60) % 60)|int }}:{% if user.invite_cooldown % 60 < 10 %}0{% endif %}{{ (user.invite_cooldown % 60)|int }} left
+                        </span>
+                    {% else %}
+                        <form method="POST" action="{{ url_for('invite_user', trip_id=trip.trip_id, invitee=user.username) }}" style="display:inline; margin:0;">
+                            <button type="submit" class="btn btn-outline-success btn-sm d-flex align-items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle me-1" viewBox="0 0 16 16">
+                                  <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+                                  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                                Add
+                            </button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% else %}
+                <li class="list-group-item bg-dark text-white">No users available to invite.</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="alert alert-info mt-4">Only the trip creator can invite users to this trip.</div>
+        {% endif %}
+        <a href="{{ url_for('trip_details', trip_id=trip.trip_id) }}" class="btn btn-link mt-3">Back to Trip</a>
+    </div>
+    <script>
+    // Live countdown for all cooldown badges
+    function pad(n) { return n < 10 ? '0' + n : n; }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('[data-seconds]').forEach(function(el) {
+            let seconds = parseInt(el.getAttribute('data-seconds'));
+            function update() {
+                if (seconds <= 0) { el.textContent = 'Ready'; return; }
+                let h = Math.floor(seconds / 3600);
+                let m = Math.floor((seconds % 3600) / 60);
+                let s = seconds % 60;
+                el.textContent = `${h}:${pad(m)}:${pad(s)} left`;
+                seconds--;
+            }
+            update();
+            setInterval(update, 1000);
+        });
+    });
+    </script>
+</body>
+</html>

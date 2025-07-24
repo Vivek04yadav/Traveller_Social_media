@@ -1,0 +1,113 @@
+body, .bg-black {
+    background-color: #18191a !important;
+}
+.chat-list-item:hover {
+    background: #242526 !important;
+}
+input.form-control {
+    background: #242526 !important;
+    border: none;
+    color: #fff;
+}
+::-webkit-scrollbar {
+    width: 8px;
+    background: #242526;
+}
+::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+.chat-list-item.active {
+    background: #3a3b3c !important;
+}
+.dot {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 8px;
+}
+.online { background: #4caf50; }
+.offline { background: #aaa; }
+
+/* --- DM Input Bar Instagram Style --- */
+.dm-input-bar, .insta-dm-input-bar {
+  display: flex;
+  align-items: center;
+  background: #000;
+  border: 1px solid #444;
+  border-radius: 28px;
+  height: 56px;
+  padding: 0 18px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.dm-input-bar .icon, .insta-dm-input-inner label, .insta-dm-input-inner button {
+  color: #fff;
+  font-size: 28px;
+  margin: 0 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  height: 40px;
+  width: 40px;
+  justify-content: center;
+  transition: color 0.18s;
+}
+
+.insta-dm-input-inner {
+  display: flex;
+  align-items: center;
+  background: #000;
+  border-radius: 28px;
+  padding: 0 18px;
+  width: 100%;
+  border: 1.5px solid #fff;
+  box-shadow: none;
+  gap: 8px;
+  min-height: 56px;
+  height: 56px;
+}
+
+.insta-dm-input-inner textarea {
+  background: transparent;
+  border: none;
+  color: #fff;
+  resize: none;
+  font-size: 18px;
+  flex: 1;
+  margin: 0 10px;
+  min-height: 32px;
+  max-height: 80px;
+  outline: none;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.insta-dm-input-inner textarea::placeholder {
+  color: #aaa;
+  opacity: 1;
+}
+
+.insta-dm-input-inner label:hover, .insta-dm-input-inner button:hover {
+  color: #3b82f6;
+}
+
+.dm-placeholder {
+  color: #fff;
+  opacity: 0.8;
+  font-size: 18px;
+  flex: 1;
+  margin: 0 10px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-family: inherit;
+  letter-spacing: 0.01em;
+}

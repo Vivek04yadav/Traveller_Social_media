@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Trip</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap">
+    <style>
+        body { background: #18191a !important; color: #e0e0e0 !important; font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif; }
+        .create-trip-card {
+            background: rgba(30,34,40,0.92);
+            border-radius: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(31,38,135,0.27);
+            backdrop-filter: blur(10px);
+            color: #fff !important;
+            padding: 2.5rem 2rem 2rem 2rem;
+            position: relative;
+            overflow: hidden;
+            border: 1.5px solid #23272b;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .create-trip-card h2 {
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: #fff;
+            text-shadow: 0 2px 8px #000a, 0 1px 0 #4f8cff;
+        }
+        .create-trip-form .form-floating > .form-control {
+            background: #23272b !important;
+            color: #fff !important;
+            border: 2px solid #4f8cff !important;
+            border-radius: 0.75rem;
+            font-size: 1.13rem;
+            font-weight: 700;
+            box-shadow: none;
+            letter-spacing: 0.02em;
+        }
+        .create-trip-form .form-floating > .form-control:focus {
+            border-color: #a6ffcb !important;
+            box-shadow: 0 0 0 0.2rem rgba(79,140,255,0.18);
+            background: #23272b !important;
+            color: #fff !important;
+        }
+        .create-trip-form .form-floating > label {
+            color: #a6ffcb !important;
+            font-weight: 700;
+            left: 0.75rem;
+            font-size: 1.05rem;
+            text-shadow: 0 1px 4px #000a;
+        }
+        .create-trip-form .btn-primary {
+            background: linear-gradient(90deg,#4f8cff,#003366);
+            border: none;
+            font-weight: 800;
+            font-size: 1.13rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 8px #0004;
+            transition: background 0.2s, box-shadow 0.2s;
+            letter-spacing: 0.03em;
+        }
+        .create-trip-form .btn-primary:hover {
+            background: linear-gradient(90deg,#a6ffcb,#4f8cff);
+            color: #18191a;
+            box-shadow: 0 4px 16px #4f8cff44;
+        }
+    </style>
+</head>
+<body class="bg-dark">
+    {% include 'navbar.html' %}
+    <div class="container mt-5">
+        <div class="create-trip-card">
+            <h2 class="text-center mb-4">Create a New Trip</h2>
+            {% include 'flashes.html' %}
+            <form method="POST" class="create-trip-form">
+                <div class="form-floating mb-3">
+                    <input type="text" name="destination" class="form-control" id="destination" placeholder="Destination" required>
+                    <label for="destination">Destination</label>
+                </div>
+                <div class="row mb-3">
+                    <div class="col form-floating">
+                        <input type="date" name="start_date" class="form-control" id="start_date" placeholder="Start Date" required>
+                        <label for="start_date">Start Date</label>
+                    </div>
+                    <div class="col form-floating">
+                        <input type="date" name="end_date" class="form-control" id="end_date" placeholder="End Date" required>
+                        <label for="end_date">End Date</label>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" name="description" class="form-control" id="description" placeholder="Description">
+                    <label for="description">Description</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" name="preferences" class="form-control" id="preferences" placeholder="Preferences (comma separated)">
+                    <label for="preferences">Preferences (comma separated)</label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100"><i class="fa fa-plus"></i> Create Trip</button>
+            </form>
+            <a href="{{ url_for('list_trips') }}" class="btn btn-link mt-3">Back to Trips</a>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+</html>

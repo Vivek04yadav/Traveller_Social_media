@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body, .ig-dm-bg { background: #18191a; color: #fff; }
+        .ig-dm-container { display: flex; height: 100vh; }
+        .ig-dm-sidebar {
+            width: 350px;
+            background: #202124;
+            border-right: 1px solid #23272b;
+            display: flex;
+            flex-direction: column;
+        }
+        .ig-dm-sidebar-header {
+            padding: 1.2rem 1.5rem 0.7rem 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #23272b;
+            color: #fff;
+        }
+        .ig-dm-sidebar-tabs {
+            display: flex;
+            gap: 2rem;
+            padding: 0.7rem 1.5rem 0.5rem 1.5rem;
+            border-bottom: 1px solid #23272b;
+        }
+        .ig-dm-sidebar-tab {
+            color: #7ab4ff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-bottom: 2.5px solid transparent;
+            padding-bottom: 4px;
+            margin-right: 1.2rem;
+            transition: color 0.2s, border-bottom 0.2s;
+        }
+        .ig-dm-sidebar-tab.active {
+            color: #3b82f6;
+            border-bottom: 2.5px solid #3b82f6;
+        }
+        .ig-dm-search-bar {
+            background: #23272b;
+            border: none;
+            color: #e4e6eb;
+            border-radius: 1.2rem;
+            padding: 10px 18px 10px 40px;
+            font-size: 1.08rem;
+            margin: 1rem 1.5rem 0.5rem 1.5rem;
+            width: calc(100% - 3rem);
+        }
+        .ig-dm-search-icon {
+            position: absolute;
+            left: 2.1rem;
+            top: 3.7rem;
+            color: #bdbdbd;
+            font-size: 1.1rem;
+        }
+        .ig-dm-sidebar-users {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 0.5rem 0;
+        }
+        .ig-dm-user-link {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1.2rem;
+            text-decoration: none;
+            color: #fff;
+            border-radius: 16px;
+            margin: 2px 0;
+            transition: background 0.18s;
+            position: relative;
+        }
+        .ig-dm-user-link.active, .ig-dm-user-link:hover {
+            background: #23272b;
+        }
+        .ig-dm-user-avatar img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 14px;
+            border: 2px solid #3b82f6;
+        }
+        .ig-dm-user-info { flex: 1 1 auto; }
+        .ig-dm-username { font-weight: 600; font-size: 1.08rem; }
+        .ig-dm-user-handle { color: #7fffd4; font-size: 0.98rem; }
+        .ig-dm-last-message { color: #bdbdbd; font-size: 0.97rem; margin-top: 2px; }
+        .ig-dm-user-dot {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin-left: 7px;
+            vertical-align: middle;
+        }
+        .ig-dm-main-chat {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            background: #18191a;
+        }
+        .ig-dm-chat-header {
+            padding: 1.1rem 2.2rem 1.1rem 2.2rem;
+            border-bottom: 1px solid #23272b;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            background: #202124;
+        }
+        .ig-dm-chat-header .ig-dm-user-avatar img {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #3b82f6;
+            margin: 0;
+        }
+        .ig-dm-chat-header .ig-dm-username {
+            font-size: 1.18rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .ig-dm-chat-header .ig-dm-user-handle {
+            color: #7fffd4;
+            font-size: 1.01rem;
+            margin-left: 2px;
+        }
+        .ig-dm-chat-header .ig-dm-last-seen {
+            color: #4caf50;
+            font-size: 0.98rem;
+            margin-left: 10px;
+        }
+        .ig-dm-chat-header .ig-dm-header-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 1.5rem;
+            font-size: 1.35rem;
+            color: #bdbdbd;
+        }
+        .ig-dm-chat-header .ig-dm-header-actions i:hover { color: #3b82f6; cursor: pointer; }
+        .ig-dm-chat-messages {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 2.2rem 2.5rem 1.2rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+            background: #18191a;
+        }
+        .ig-dm-message {
+            max-width: 60%;
+            padding: 0.8rem 1.2rem;
+            border-radius: 18px;
+            position: relative;
+            font-size: 1.08rem;
+            word-break: break-word;
+            background: #23272b;
+            color: #fff;
+            align-self: flex-start;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
+        .ig-dm-message.sent {
+            background: linear-gradient(90deg, #3b82f6 60%, #7b2ff2 100%);
+            color: #fff;
+            align-self: flex-end;
+        }
+        .ig-dm-message .ig-dm-timestamp {
+            display: block;
+            color: #7fffd4;
+            font-size: 0.93rem;
+            margin-top: 2px;
+            text-align: right;
+        }
+        .ig-dm-message .ig-dm-seen {
+            color: #4caf50;
+            font-size: 0.93rem;
+            margin-left: 8px;
+        }
+        .ig-dm-message .ig-dm-content {
+            display: block;
+            margin-bottom: 2px;
+        }
+        .ig-dm-message a {
+            color: #ffd600;
+            text-decoration: underline;
+            font-size: 0.97rem;
+        }
+        .insta-dm-input-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 3rem 2rem 3rem;
+            background: #18191a;
+            position: sticky;
+            bottom: 0;
+            border: none;
+            min-height: 4rem;
+        }
+        .insta-dm-input-inner {
+            display: flex;
+            align-items: center;
+            background: #000;
+            border-radius: 3rem;
+            padding: 1.2rem 2.2rem;
+            width: 100%;
+            max-width: 1100px;
+            border: 1.5px solid #fff;
+            box-shadow: none;
+            gap: 1.2rem;
+            min-height: 4rem;
+        }
+        .insta-dm-input-inner textarea {
+            flex: 1 1 auto;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.35rem;
+            outline: none;
+            padding: 1.1rem 0;
+            border-radius: 2rem;
+            min-height: 2.8rem;
+            max-height: 8rem;
+            resize: none;
+            line-height: 1.5;
+            overflow-y: auto;
+        }
+        .insta-dm-input-inner textarea::placeholder {
+            color: #fff;
+            opacity: 0.7;
+            font-size: 1.25rem;
+        }
+        .insta-dm-input-inner label, .insta-dm-input-inner button {
+            margin: 0;
+            cursor: pointer;
+            color: #fff;
+            font-size: 1.7rem;
+            transition: color 0.18s;
+            display: flex;
+            align-items: center;
+            background: none;
+            border: none;
+            padding: 0 0.3rem;
+            height: 2.8rem;
+        }
+        .insta-dm-input-inner label:hover, .insta-dm-input-inner button:hover {
+            color: #3b82f6;
+        }
+        .insta-dm-input-inner .fa-paper-plane {
+            font-size: 1.7rem;
+        }
+        .insta-dm-input-inner .fa-microphone, .insta-dm-input-inner .fa-image, .insta-dm-input-inner .fa-face-smile {
+            font-size: 1.5rem;
+        }
+        @media (max-width: 900px) {
+            .ig-dm-sidebar { width: 70px; }
+            .ig-dm-user-info { display: none; }
+            .ig-dm-main-chat { padding-left: 0; }
+            .ig-dm-chat-header, .ig-dm-chat-input-bar { padding-left: 0.7rem; padding-right: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="ig-dm-bg">
+  <div class="ig-dm-container">
+    <!-- Sidebar -->
+    <div class="ig-dm-sidebar">
+      <a href="{{ url_for('home') }}" class="btn btn-link p-0 m-0" style="color:#fff; font-size:1.7rem; margin-left:1.2rem; margin-top:1.1rem; margin-bottom:0.2rem; display:inline-block;">
+        <i class="fa fa-home"></i>
+      </a>
+      <div class="ig-dm-sidebar-header">{{ session['username'] }}</div>
+      <div class="ig-dm-sidebar-tabs">
+        <span class="ig-dm-sidebar-tab active">Primary</span>
+        <span class="ig-dm-sidebar-tab">General</span>
+        <span class="ig-dm-sidebar-tab">Requests</span>
+      </div>
+      <div style="position:relative;">
+        <i class="fa fa-search ig-dm-search-icon"></i>
+        <input class="ig-dm-search-bar" placeholder="Search..." />
+      </div>
+      <div class="ig-dm-sidebar-users">
+        {% for convo in conversations %}
+          <a href="{{ url_for('chat', username=convo.username) }}" class="ig-dm-user-link{% if active_user == convo.username %} active{% endif %}">
+            <div class="ig-dm-user-avatar">
+              <img src="{{ convo.avatar_url }}" alt="avatar" />
+            </div>
+            <div class="ig-dm-user-info">
+              <span class="ig-dm-username">{{ convo.username.split('@')[0] if '@' in convo.username else convo.username }}</span><br>
+              <span class="ig-dm-user-handle">@{{ convo.username.split('@')[0] if '@' in convo.username else convo.username }}</span>
+              <div class="ig-dm-last-message">{{ convo.last_message }}</div>
+            </div>
+            {% if convo.is_online %}<span class="ig-dm-user-dot"></span>{% endif %}
+          </a>
+        {% endfor %}
+      </div>
+      <!-- Example Sidebar More Button (add this where your sidebar items are) -->
+      <div class="sidebar-item" id="sidebarMoreBtn" style="cursor:pointer; display:flex; align-items:center; gap:8px; margin-top:1.2rem;">
+        <i class="fa fa-bars"></i> <span>More</span>
+      </div>
+    </div>
+    <!-- Main Chat Area -->
+    <div class="ig-dm-main-chat flex-grow-1">
+      {% if active_user %}
+        <div class="ig-dm-chat-header">
+          <div class="ig-dm-user-avatar">
+            <img src="{{ get_avatar_url(active_user) }}" alt="avatar" />
+          </div>
+          <div>
+            <span class="ig-dm-username">{{ active_user }}</span><br>
+            <span class="ig-dm-user-handle">@{{ active_user }}</span><br>
+            <span class="ig-dm-last-seen">{% if last_seen %}Last seen {{ last_seen }}{% else %}Last seen unknown{% endif %}</span>
+          </div>
+          <div class="ig-dm-header-actions ms-auto">
+            <i class="fa fa-phone" id="call-btn"></i>
+            <i class="fa fa-video" id="video-btn"></i>
+            <i class="fa fa-info-circle" id="info-btn"></i>
+          </div>
+        </div>
+        <div class="ig-dm-chat-messages">
+          {% for msg in messages %}
+            <div class="ig-dm-message{% if msg.sender == session['username'] %} sent{% endif %}">
+              <span class="ig-dm-content">{{ msg.content }}</span>
+              {% if msg.attachment %}
+                <a href="{{ url_for('static', filename='profile_pics/' ~ msg.attachment) }}" target="_blank">Attachment</a>
+              {% endif %}
+              <span class="ig-dm-timestamp">{{ msg.timestamp }}{% if msg.sender == session['username'] %} <span class="ig-dm-seen">Seen</span>{% endif %}</span>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="insta-dm-input-bar">
+          <form class="insta-dm-input-inner" method="post" enctype="multipart/form-data" action="{{ url_for('chat', username=active_user) }}">
+            <div class="image-preview" style="display:none; align-items:center; gap:8px;"></div>
+            <textarea name="content" id="instaMessageInput" placeholder="Message..." autocomplete="off" rows="1"></textarea>
+            <button type="button" class="icon" id="mic-btn" title="Voice"><i class="fa-regular fa-microphone"></i></button>
+            <label for="file-upload" class="icon" title="Attach image"><i class="fa-regular fa-image"></i></label>
+            <input id="file-upload" type="file" name="attachment" style="display:none;" accept="image/*" />
+            <button type="button" class="icon" id="sticker-btn" title="Stickers"><i class="fa-regular fa-face-smile-beam"></i></button>
+            <button type="submit" class="icon" title="Send"><i class="fa-regular fa-paper-plane"></i></button>
+          </form>
+        </div>
+      {% else %}
+        <div class="ig-dm-empty-placeholder">Select a user to start chatting.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<!-- More Features Modal -->
+<div class="modal fade" id="sidebarMoreModal" tabindex="-1" aria-labelledby="sidebarMoreLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="sidebarMoreLabel">More Features</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-unstyled">
+          <li style="margin-bottom:1rem;"><i class="fa fa-cog"></i> Settings</li>
+          <li style="margin-bottom:1rem;"><i class="fa fa-question-circle"></i> Help</li>
+          <li><i class="fa fa-sign-out-alt"></i> Logout</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Call Modal for Voice/Video Calls -->
+<div id="callModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; flex-direction:column;">
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
+    <div id="callStatus" style="color:#fff; font-size:1.3rem; margin-bottom:1rem;">Connecting...</div>
+    <video id="remoteVideo" autoplay playsinline style="width:340px; height:240px; background:#222; border-radius:12px; margin-bottom:1rem;"></video>
+    <video id="localVideo" autoplay playsinline muted style="width:120px; height:90px; background:#333; border-radius:8px; position:absolute; bottom:80px; right:80px; border:2px solid #fff;"></video>
+    <div style="margin-top:2rem;">
+      <button id="endCallBtn" style="background:#e74c3c; color:#fff; border:none; border-radius:50%; width:56px; height:56px; font-size:2rem; cursor:pointer; margin:0 1rem;">&#128222;</button>
+    </div>
+  </div>
+</div>
+<!-- Incoming Call Modal -->
+<div id="incomingCallModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:10000; align-items:center; justify-content:center; flex-direction:column;">
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
+    <div id="incomingCallText" style="color:#fff; font-size:1.3rem; margin-bottom:1.5rem;">Incoming call...</div>
+    <div style="margin-top:1rem;">
+      <button id="acceptCallBtn" style="background:#27ae60; color:#fff; border:none; border-radius:50%; width:56px; height:56px; font-size:2rem; cursor:pointer; margin:0 1.5rem;">&#x2714;</button>
+      <button id="declineCallBtn" style="background:#e74c3c; color:#fff; border:none; border-radius:50%; width:56px; height:56px; font-size:2rem; cursor:pointer; margin:0 1.5rem;">&#x2716;</button>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// --- WebRTC + Socket.IO Call Logic ---
+const socket = io();
+let localStream = null;
+let remoteStream = null;
+let peerConnection = null;
+let isCaller = false;
+let callType = null; // 'audio' or 'video'
+const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+const callModal = document.getElementById('callModal');
+const callStatus = document.getElementById('callStatus');
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
+const endCallBtn = document.getElementById('endCallBtn');
+const callBtn = document.getElementById('call-btn');
+const videoBtn = document.getElementById('video-btn');
+
+function openCallModal(type) {
+  callType = type;
+  callModal.style.display = 'flex';
+  callStatus.textContent = 'Connecting...';
+  localVideo.style.display = (type === 'video') ? 'block' : 'none';
+  remoteVideo.style.display = (type === 'video') ? 'block' : 'none';
+}
+function closeCallModal() {
+  callModal.style.display = 'none';
+  if (localVideo.srcObject) {
+    localVideo.srcObject.getTracks().forEach(track => track.stop());
+    localVideo.srcObject = null;
+  }
+  if (remoteVideo.srcObject) {
+    remoteVideo.srcObject = null;
+  }
+  if (peerConnection) {
+    peerConnection.close();
+    peerConnection = null;
+  }
+  localStream = null;
+  remoteStream = null;
+  isCaller = false;
+  callType = null;
+}
+
+// Start call (audio or video)
+function startCall(type) {
+  openCallModal(type);
+  isCaller = true;
+  navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: type === 'video'
+  }).then(stream => {
+    localStream = stream;
+    if (type === 'video') localVideo.srcObject = stream;
+    peerConnection = createPeerConnection();
+    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+    // Send call request to other user
+    socket.emit('call-user', {
+      to: window.activeUser, // set this JS variable to the username being called
+      from: window.currentUser, // set this JS variable to the current username
+      type: type
+    });
+  }).catch(err => {
+    alert('Could not access media devices: ' + err);
+    closeCallModal();
+  });
+}
+
+// Answer call
+function answerCall(type) {
+  openCallModal(type);
+  navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: type === 'video'
+  }).then(stream => {
+    localStream = stream;
+    if (type === 'video') localVideo.srcObject = stream;
+    peerConnection = createPeerConnection();
+    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+  }).catch(err => {
+    alert('Could not access media devices: ' + err);
+    closeCallModal();
+  });
+}
+
+function createPeerConnection() {
+  const pc = new RTCPeerConnection(configuration);
+  pc.onicecandidate = event => {
+    if (event.candidate) {
+      socket.emit('ice-candidate', {
+        to: window.activeUser,
+        from: window.currentUser,
+        candidate: event.candidate
+      });
+    }
+  };
+  pc.ontrack = event => {
+    if (!remoteStream) {
+      remoteStream = new MediaStream();
+      remoteVideo.srcObject = remoteStream;
+    }
+    remoteStream.addTrack(event.track);
+  };
+  return pc;
+}
+
+// Handle call button clicks
+if (callBtn) callBtn.onclick = function() { startCall('audio'); };
+if (videoBtn) videoBtn.onclick = function() { startCall('video'); };
+endCallBtn.onclick = function() {
+  socket.emit('end-call', { to: window.activeUser, from: window.currentUser });
+  closeCallModal();
+};
+
+// Socket.IO signaling events
+socket.on('call-made', data => {
+  // Show incoming call modal
+  incomingCallData = data;
+  incomingCallText.textContent = `${data.from} is calling you (${data.type})...`;
+  incomingCallModal.style.display = 'flex';
+  // Optionally play ringing sound here
+});
+
+acceptCallBtn.onclick = function() {
+  if (incomingCallData) {
+    answerCall(incomingCallData.type);
+    socket.emit('call-accepted', { to: incomingCallData.from, from: incomingCallData.to, type: incomingCallData.type });
+    incomingCallModal.style.display = 'none';
+    incomingCallData = null;
+  }
+};
+declineCallBtn.onclick = function() {
+  if (incomingCallData) {
+    socket.emit('call-rejected', { to: incomingCallData.from, from: incomingCallData.to });
+    incomingCallModal.style.display = 'none';
+    incomingCallData = null;
+  }
+};
+socket.on('call-rejected', () => {
+  closeCallModal();
+  alert('Call declined');
+});
+socket.on('call-accepted', async data => {
+  if (isCaller && peerConnection) {
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    socket.emit('offer', { to: window.activeUser, from: window.currentUser, offer });
+  }
+});
+socket.on('offer', async data => {
+  if (peerConnection) {
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    socket.emit('answer', { to: data.from, from: data.to, answer });
+  }
+});
+socket.on('answer', async data => {
+  if (peerConnection) {
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+  }
+});
+socket.on('ice-candidate', data => {
+  if (peerConnection && data.candidate) {
+    peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+  }
+});
+socket.on('end-call', () => {
+  closeCallModal();
+  alert('Call ended');
+});
+</script>
+<script>
+    // Live search in sidebar
+    document.querySelector('.ig-dm-search-bar').addEventListener('input', function() {
+        let filter = this.value.toLowerCase();
+        let users = document.querySelectorAll('.ig-dm-user-link');
+        users.forEach(function(row) {
+            let name = row.textContent.toLowerCase();
+            row.style.display = name.includes(filter) ? '' : 'none';
+        });
+    });
+</script>
+<script>
+function toggleSendBtn() {
+  var input = document.getElementById('instaMessageInput');
+  var btn = document.getElementById('instaSendBtn');
+  if (input.value.trim().length > 0) {
+    btn.disabled = false;
+    btn.classList.add('active');
+  } else {
+    btn.disabled = true;
+    btn.classList.remove('active');
+  }
+}
+function enableSendBtn() {
+  var btn = document.getElementById('instaSendBtn');
+  btn.disabled = false;
+  return true;
+}
+</script>
+<script>
+// --- Voice Message Feature ---
+let isRecording = false;
+let mediaRecorder = null;
+let recordedChunks = [];
+const voiceBtn = document.getElementById('mic-btn');
+if (voiceBtn) {
+    voiceBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        if (!isRecording) {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Audio recording not supported in this browser.');
+                return;
+            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                recordedChunks = [];
+                mediaRecorder.ondataavailable = function(e) {
+                    if (e.data.size > 0) recordedChunks.push(e.data);
+                };
+                mediaRecorder.onstop = function() {
+                    const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        const base64Audio = reader.result;
+                        const data = {
+                            sender: window.currentUser,
+                            receiver: window.activeUser,
+                            content: '[voice]',
+                            audio: base64Audio,
+                            timestamp: new Date().toISOString()
+                        };
+                        socket.emit('send_message', data);
+                        addMessageToUI(data, true);
+                    };
+                    reader.readAsDataURL(blob);
+                };
+                mediaRecorder.start();
+                isRecording = true;
+                voiceBtn.classList.add('btn-danger');
+                voiceBtn.innerHTML = '<i class="fas fa-stop"></i>';
+            } catch (err) {
+                alert('Could not access microphone.');
+            }
+        } else {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            isRecording = false;
+            voiceBtn.classList.remove('btn-danger');
+            voiceBtn.innerHTML = '<i class="fa fa-microphone"></i>';
+        }
+    });
+}
+
+// --- Sticker Picker Feature ---
+if (!document.getElementById('stickerModal')) {
+    const stickerModal = document.createElement('div');
+    stickerModal.id = 'stickerModal';
+    stickerModal.className = 'modal fade';
+    stickerModal.tabIndex = -1;
+    stickerModal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">Choose a Sticker</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body d-flex flex-wrap gap-2 justify-content-center" id="stickerList">
+                <!-- Stickers will be loaded here -->
+            </div>
+        </div>
+    </div>`;
+    document.body.appendChild(stickerModal);
+}
+const stickers = [
+    '/static/icons/icon-192.png',
+    '/static/icons/icon-512.png',
+    '/static/images/logo.png',
+    '/static/images/hero.jpg'
+];
+const stickerBtn = document.getElementById('sticker-btn');
+if (stickerBtn) {
+    stickerBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const stickerList = document.getElementById('stickerList');
+        stickerList.innerHTML = '';
+        stickers.forEach(url => {
+            const img = document.createElement('img');
+            img.src = url;
+            img.style.width = '64px';
+            img.style.height = '64px';
+            img.style.cursor = 'pointer';
+            img.onclick = function() {
+                const data = {
+                    sender: window.currentUser,
+                    receiver: window.activeUser,
+                    content: '[sticker]',
+                    sticker: url,
+                    timestamp: new Date().toISOString()
+                };
+                socket.emit('send_message', data);
+                addMessageToUI(data, true);
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('stickerModal')).hide();
+            };
+            stickerList.appendChild(img);
+        });
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('stickerModal')).show();
+    });
+}
+
+// --- Enhanced addMessageToUI ---
+function addMessageToUI(data, isMine) {
+    const container = document.querySelector('.ig-dm-chat-messages');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'ig-dm-message-row ' + (isMine ? 'mine' : '');
+    let bubbleContent = '';
+    if (data.audio) {
+        bubbleContent = `<audio controls src="${data.audio}" style="width:180px;"></audio>`;
+    } else if (data.sticker) {
+        bubbleContent = `<img src="${data.sticker}" alt="Sticker" style="max-width:120px;max-height:120px;">`;
+    } else {
+        bubbleContent = data.content;
+    }
+    msgDiv.innerHTML = `
+        <div class="ig-dm-message-bubble">
+            ${bubbleContent}
+        </div>
+        <div class="ig-dm-message-meta">
+            ${data.timestamp ? data.timestamp : ''}
+        </div>
+    `;
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+}
+</script>
+<script>
+window.onload = function() {
+  var chatBox = document.querySelector('.ig-dm-chat-messages');
+  if (chatBox) {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+};
+</script>
+<script>
+// Image preview logic
+const fileInput = document.getElementById('file-upload');
+const previewDiv = document.querySelector('.image-preview');
+fileInput.addEventListener('change', function(e) {
+  previewDiv.innerHTML = '';
+  if (this.files && this.files[0]) {
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(this.files[0]);
+    img.style.maxWidth = '60px';
+    img.style.maxHeight = '60px';
+    img.style.borderRadius = '10px';
+    img.style.marginRight = '8px';
+    img.style.border = '1.5px solid #fff';
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.innerHTML = '&times;';
+    removeBtn.style.background = '#222';
+    removeBtn.style.color = '#fff';
+    removeBtn.style.border = 'none';
+    removeBtn.style.fontSize = '1.5rem';
+    removeBtn.style.cursor = 'pointer';
+    removeBtn.style.borderRadius = '50%';
+    removeBtn.style.width = '32px';
+    removeBtn.style.height = '32px';
+    removeBtn.onclick = function() {
+      fileInput.value = '';
+      previewDiv.style.display = 'none';
+      previewDiv.innerHTML = '';
+    };
+    previewDiv.appendChild(img);
+    previewDiv.appendChild(removeBtn);
+    previewDiv.style.display = 'flex';
+  } else {
+    previewDiv.style.display = 'none';
+  }
+});
+</script>
+<script>
+document.getElementById('call-btn').onclick = function() { startCall('audio'); };
+document.getElementById('video-btn').onclick = function() { startCall('video'); };
+endCallBtn.onclick = function() {
+  socket.emit('end-call', { to: window.activeUser, from: window.currentUser });
+  closeCallModal();
+};
+
+// Socket.IO signaling events
+socket.on('call-made', data => {
+  // Incoming call
+  if (confirm(`${data.from} is calling you (${data.type})! Accept?`)) {
+    answerCall(data.type);
+    socket.emit('call-accepted', { to: data.from, from: data.to, type: data.type });
+  } else {
+    socket.emit('call-rejected', { to: data.from, from: data.to });
+  }
+});
+socket.on('call-accepted', async data => {
+  if (isCaller && peerConnection) {
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    socket.emit('offer', { to: window.activeUser, from: window.currentUser, offer });
+  }
+});
+socket.on('offer', async data => {
+  if (peerConnection) {
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    socket.emit('answer', { to: data.from, from: data.to, answer });
+  }
+});
+socket.on('answer', async data => {
+  if (peerConnection) {
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+  }
+});
+socket.on('ice-candidate', data => {
+  if (peerConnection && data.candidate) {
+    peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+  }
+});
+socket.on('end-call', () => {
+  closeCallModal();
+  alert('Call ended');
+});
+</script>
+<script>
+const sidebarMoreBtn = document.getElementById('sidebarMoreBtn');
+if (sidebarMoreBtn) {
+  sidebarMoreBtn.addEventListener('click', function() {
+    var modal = new bootstrap.Modal(document.getElementById('sidebarMoreModal'));
+    modal.show();
+  });
+}
+</script>
+{% if trip %}
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+.advanced-trip-card {
+  max-width: 600px;
+  margin: 3rem auto;
+  background: rgba(30, 32, 36, 0.85);
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 2.5rem 2rem 2rem 2rem;
+  font-family: 'Montserrat', sans-serif;
+  color: #f3f3f3;
+}
+.advanced-trip-card h2 {
+  font-weight: 700;
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+.advanced-trip-card .section {
+  margin-bottom: 1.3rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+.advanced-trip-card .section i {
+  font-size: 1.4rem;
+  margin-top: 2px;
+}
+.advanced-trip-card .divider {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin: 1.2rem 0;
+}
+.advanced-trip-card .btn-group {
+  margin-bottom: 1.2rem;
+  display: flex;
+  gap: 1rem;
+}
+.advanced-trip-card .btn {
+  border-radius: 1.5rem;
+  padding: 0.5rem 1.3rem;
+  font-weight: 600;
+  border: none;
+  background: linear-gradient(90deg, #3b82f6 60%, #7b2ff2 100%);
+  color: #fff;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.08);
+  cursor: pointer;
+  font-size: 1rem;
+}
+.advanced-trip-card .btn:hover {
+  background: linear-gradient(90deg, #7b2ff2 60%, #3b82f6 100%);
+}
+#tripMap {
+  height: 300px;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  margin-top: 1.2rem;
+  box-shadow: 0 2px 12px rgba(59,130,246,0.10);
+}
+@media (max-width: 700px) {
+  .advanced-trip-card { padding: 1rem; }
+  #tripMap { height: 180px; }
+  h2 { font-size: 1.3rem; }
+}
+</style>
+
+<div class="advanced-trip-card">
+  <div class="section" style="justify-content:center;">
+    <i class="fa fa-map-marker-alt fa-2x" style="color:#3b82f6;"></i>
+    <h2>{{ trip.city|capitalize }}</h2>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <i class="fa fa-calendar-alt" style="color:#7b2ff2;"></i>
+    <div>
+      <span style="font-weight:600;">Dates:</span>
+      {{ trip.start_date }} to {{ trip.end_date }}
+    </div>
+  </div>
+  <div class="section">
+    <i class="fa fa-align-left" style="color:#ffd600;"></i>
+    <div>
+      <span style="font-weight:600;">Description:</span>
+      {{ trip.description }}
+    </div>
+  </div>
+  <div class="section">
+    <i class="fa fa-heart" style="color:#ff4b6e;"></i>
+    <div>
+      <span style="font-weight:600;">Preferences:</span>
+      {{ trip.preferences }}
+    </div>
+  </div>
+  <div class="section">
+    <i class="fa fa-users" style="color:#4caf50;"></i>
+    <div>
+      <span style="font-weight:600;">Participants:</span>
+      {{ trip.participants|join(', ') }}
+    </div>
+  </div>
+  <div class="btn-group">
+    <a href="{{ url_for('invite_users', trip_id=trip.id) }}" class="btn">
+      <i class="fa fa-user-plus"></i> Invite Users
+    </a>
+    <a href="{{ url_for('trips') }}" class="btn" style="background:#23272b; color:#fff;">Back to Trips</a>
+  </div>
+  <div id="tripMap"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  var map = L.map('tripMap').setView([{{ trip.lat|default(48.8566) }}, {{ trip.lon|default(2.3522) }}], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+  var customIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+    iconSize: [38, 38],
+    iconAnchor: [19, 38],
+    popupAnchor: [0, -38]
+  });
+  L.marker([{{ trip.lat|default(48.8566) }}, {{ trip.lon|default(2.3522) }}], {icon: customIcon})
+    .addTo(map)
+    .bindPopup('{{ trip.city|capitalize }}')
+    .openPopup();
+</script>
+{% endif %}
+</body>
+</html> 

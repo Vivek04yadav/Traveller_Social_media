@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Explore - Travel Partner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .post-img { width: 100%; max-height: 350px; object-fit: cover; border-radius: 10px; }
+        .post-card { margin-bottom: 2rem; }
+    </style>
+</head>
+<body class="bg-dark">
+    {% include 'navbar.html' %}
+    <div class="container mt-4">
+        <h2 class="mb-4 text-center">Explore</h2>
+        <div class="row">
+            {% for post in posts %}
+            <div class="col-md-4">
+                <div class="card post-card shadow-sm">
+                    <img src="{{ url_for('static', filename='trip_posts/' ~ post.image) }}" class="post-img card-img-top" style="cursor:pointer;" onclick="window.location='{{ url_for('post_view', post_id=post.post_id) }}'">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">
+                            <a href="{{ url_for('view_profile', username=post.username) }}"><b>{{ post.username }}</b></a>
+                        </h6>
+                        <p class="card-text">{{ post.caption }}</p>
+                        <p class="text-muted small mb-0">{{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <!-- ...likes, comments, etc... -->
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
