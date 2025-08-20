@@ -1,0 +1,10 @@
+Flask
+pandas
+Werkzeug
+Flask-SQLAlchemy
+Flask-Migrate
+MarkupSafe
+Flask-Login
+flask-socketio
+python-socketio
+eventlet
